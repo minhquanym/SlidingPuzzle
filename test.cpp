@@ -8,6 +8,10 @@ int main() {
         printf("Deo gi ko init duoc");
         return 0;
     }
+    if (GUI::loadMedia() == false) {
+        printf("Deo load duoc font");
+        return 0;
+    }
     GUI::setGridSize(3);
     
     Tile x1 = {0, 10, 10, 100};
@@ -30,7 +34,7 @@ int main() {
                     quit = true;
                 }
             }
-        GUI::drawBoard(a, 0);
+        GUI::drawBoard(a, 1);
     
     }
 
