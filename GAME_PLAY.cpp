@@ -81,35 +81,43 @@ namespace GAME_PLAY {
     void PLAY() {
         SDL_Event event;
 
-        while ( SDL_WaitEvent(&event) ) {
-            if ( event.type != SDL_KEYDOWN ) continue;
+        bool quit = false;
+        while (!quit) {
+            while ( SDL_PollEvent(&event) ) {
 
-            switch (event.key.keysym.sym) {
-                case SDLK_UP:
-                    moveBoard(board, 0, 1);
-                    break;
-                case SDLK_DOWN:
-                    moveBoard(board, 0, -1);
-                    break;
-                case SDLK_LEFT:
-                    moveBoard(board, 1, 0);
-                    break;
-                case SDLK_RIGHT:
-                    moveBoard(board, -1, 0);
-                    break;
-                case SDLK_s:
-                    ///solution
-                    break;
-                case SDLK_ESCAPE:
-                    /// out GAME
-                    GUI::destroy();
-                    break;
+                if (event.type == SDL_QUIT) {
+                    quit = true;
+                }
+                if ( event.type != SDL_KEYDOWN ) continue;
+
+                switch (event.key.keysym.sym) {
+                    case SDLK_UP:
+                        moveBoard(board, 0, 1);
+                        break;
+                    case SDLK_DOWN:
+                        moveBoard(board, 0, -1);
+                        break;
+                    case SDLK_LEFT:
+                        moveBoard(board, 1, 0);
+                        break;
+                    case SDLK_RIGHT:
+                        moveBoard(board, -1, 0);
+                        break;
+                    case SDLK_s:
+                        ///solution
+                        break;
+                    case SDLK_ESCAPE:
+                        /// out GAME
+                        GUI::destroy();
+                        break;
+                }
+
+                // if ( board.winGame() ) {
+                //     std::cout << "Accept\n";
+                //     break;
+                // }
             }
-
-            // if ( board.winGame() ) {
-            //     std::cout << "Accept\n";
-            //     break;
-            // }
         }
+        
     }
 } 
