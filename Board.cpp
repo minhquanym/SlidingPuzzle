@@ -1,9 +1,10 @@
-#include<Tile.cpp>
+#include<bits/stdc++.h>
+#include "Tile.cpp"
 
 struct Board {
-    vetor<Tile> TilePos;
-    vector<vector<int> > a;
-    pair<int, int> Space_location;
+    std::vector<Tile> TilePos;
+    std::vector<std::vector<int> > a;
+    std::pair<int, int> Space_location;
 
     bool inBoard(int x, int y) {
         return 0 <= x && x < (int) a.size() && 0 <= y && y < (int) a[x].size();
@@ -11,10 +12,10 @@ struct Board {
 
     bool winGame() {
         int cnt = 1;
-        for (vector<int> row) for (int x : row) {
+        for (std::vector<int> row : a) for (int x : row) {
             if (x != cnt) return false;
             cnt = (cnt + 1) % 9;
         }
         return true;
     }
-}
+};

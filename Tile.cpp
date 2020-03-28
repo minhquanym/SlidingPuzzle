@@ -1,6 +1,6 @@
 #include<bits/stdc++.h>
 
-namespace Tile {    
+struct Tile {    
     int id, x, y, current_speed;
 
     void setSpeed() {
@@ -11,4 +11,4 @@ namespace Tile {
         x += speed * addX; 
         y += speed * addY;
     }
-}
+};
