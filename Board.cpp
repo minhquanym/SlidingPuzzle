@@ -1,4 +1,3 @@
-#include<bits/stdc++.h>
 #include "Tile.cpp"
 
 struct Board {
