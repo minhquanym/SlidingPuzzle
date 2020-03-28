@@ -8,11 +8,13 @@ namespace GAME_PLAY {
         std::cout << ".......Loading game data.......\n";
 
         /// initalize tile information
-        board.a.resize(3);
-        for (int i = 0; i < 3; ++i) board.a[i].resize(3);
+            board.a.resize(3);
+            for (int i = 0; i < 3; ++i) board.a[i].resize(3);
 
-        int cc = 0;
-        for (int i = 0; i < 3; ++i) for (int j = 0; j < 3; ++j) board.a[i][j] = (++cc) % 9; 
+            int cc = 0;
+            for (int i = 0; i < 3; ++i) for (int j = 0; j < 3; ++j) board.a[i][j] = (++cc) % 9; 
+
+            board.Space_location = std::make_pair(2, 2);
 
         int m = (int) board.a.size();
         int n = (int) board.a[0].size();
@@ -82,16 +84,16 @@ namespace GAME_PLAY {
 
             switch (event.key.keysym.sym) {
                 case SDLK_UP:
-                    moveBoard(board, -1, 0);
+                    moveBoard(board, 0, 1);
                     break;
                 case SDLK_DOWN:
-                    moveBoard(board, 1, 0);
-                    break;
-                case SDLK_LEFT:
                     moveBoard(board, 0, -1);
                     break;
+                case SDLK_LEFT:
+                    moveBoard(board, 1, 0);
+                    break;
                 case SDLK_RIGHT:
-                    moveBoard(board, 0, 1);
+                    moveBoard(board, -1, 0);
                     break;
                 case SDLK_s:
                     ///solution
@@ -102,10 +104,10 @@ namespace GAME_PLAY {
                     break;
             }
 
-            if ( board.winGame() ) {
-                std::cout << "Accept\n";
-                break;
-            }
+            // if ( board.winGame() ) {
+            //     std::cout << "Accept\n";
+            //     break;
+            // }
         }
     }
 } 
