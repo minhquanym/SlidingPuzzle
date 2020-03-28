@@ -89,6 +89,10 @@ namespace GUI {
     }
 
     void drawBoard(const std::vector<Tile> board, const bool& drawNumber) {
+
+        SDL_Rect backgroundRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+        SDL_SetRenderDrawColor(gRenderer, 148, 247, 239, 1);
+        SDL_RenderFillRect(gRenderer, &backgroundRect);
         for (auto tile : board) {
             int x = tile.x;
             int y = tile.y;
@@ -109,6 +113,7 @@ namespace GUI {
             
             // }
         }
+        SDL_RenderPresent(gRenderer);
     }
     void renderTexture(SDL_Texture* texture, int x, int y, SDL_Rect* clip = NULL) {
 
