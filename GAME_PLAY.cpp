@@ -80,7 +80,9 @@ namespace GAME_PLAY {
 
     void PLAY() {
         SDL_Event event;
+        bool quit = false;
 
+        
         while ( SDL_WaitEvent(&event) ) {
             if ( event.type != SDL_KEYDOWN ) continue;
 

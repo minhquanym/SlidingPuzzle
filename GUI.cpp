@@ -13,7 +13,7 @@ namespace GUI {
 
     int gridSize = 3;
     int rawSize = (WINDOW_WIDTH - 5*WINDOW_PADDING) / gridSize;
-    int TILE_PADDING = 5;
+    int TILE_PADDING = 2;
     int TILE_SIZE = rawSize - 2*TILE_PADDING;
 
     SDL_Colour fontcolour = {112, 20, 82};
@@ -230,8 +230,8 @@ namespace GUI {
             for (int j = 0; j < gridSize; j++) {
                 int id = j*gridSize + i + 1;
                 if (id == gridSize*gridSize) continue;
-                gTileClips[id].x = i*TILE_SIZE;
-                gTileClips[id].y = j*TILE_SIZE;
+                gTileClips[id].x = j*TILE_SIZE;
+                gTileClips[id].y = i*TILE_SIZE;
                 gTileClips[id].w = TILE_SIZE;
                 gTileClips[id].h = TILE_SIZE;
             }
