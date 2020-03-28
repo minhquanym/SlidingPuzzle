@@ -253,29 +253,40 @@ namespace GUI {
     void drawBoard(const std::vector<Tile> board, const bool& drawNumber) {
 
         SDL_RenderClear(gRenderer);
+
+        // Render background
         SDL_Rect backgroundRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
         SDL_SetRenderDrawColor(gRenderer, 148, 247, 239, 1);
         SDL_RenderFillRect(gRenderer, &backgroundRect);
+
+        // Render empty board
+        SDL_Rect boardRect = {WINDOW_PADDING, WINDOW_PADDING, rawSize*gridSize, rawSize*gridSize};
+        SDL_SetRenderDrawColor(gRenderer, 214, 211, 184, 1);
+        SDL_RenderFillRect(gRenderer, &boardRect);
+
         for (auto tile : board) {
             int x = tile.x;
             int y = tile.y;
-            SDL_Rect tileRect = {x, y, rawSize, rawSize};
+            SDL_Rect tileRect = {x, y, TILE_SIZE, TILE_SIZE};
 
-            if (tile.id == 0)
-                SDL_SetRenderDrawColor(gRenderer, 214, 211, 184, 1); // empty tile 
-            else 
-                SDL_SetRenderDrawColor(gRenderer, 57, 107, 56, 1); // padding tile
+            if (tile.id == 0) continue;
+
+            // Render tile   
+            SDL_SetRenderDrawColor(gRenderer, 57, 107, 56, 1); // padding tile
             
             SDL_RenderFillRect(gRenderer, &tileRect);
 
             /// NOT COMPLETE
             
             if (drawNumber) {
-                if (tile.id == 0) continue;
                 std::string number = std::to_string(tile.id);
                 gTextTexture.loadFromRenderedText(number, fontcolour);
                 gTextTexture.render(x + (rawSize/2 - gTextTexture.getWidth()/2),
                                     y + (rawSize/2 - gTextTexture.getHeight()/2));
+            }
+            else {
+                if (tile.id == 0) continue;
+                
             }
         }
         SDL_RenderPresent(gRenderer);
