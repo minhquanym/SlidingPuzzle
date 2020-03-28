@@ -3,6 +3,10 @@
 struct Tile {    
     int id, x, y, current_speed;
 
+    bool operator != (const Tile &a) const {
+        return x != a.x || y != a.y;
+    }
+
     void setSpeed() {
         // current_speed = ;
     }
