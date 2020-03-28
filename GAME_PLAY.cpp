@@ -8,6 +8,12 @@ namespace GAME_PLAY {
         std::cout << ".......Loading game data.......\n";
 
         /// initalize tile information
+        board.a.resize(3);
+        for (int i = 0; i < 3; ++i) board.a[i].resize(3);
+
+        int cc = 0;
+        for (int i = 0; i < 3; ++i) for (int j = 0; j < 3; ++j) board.a[i][j] = (++cc) % 9; 
+
         int m = (int) board.a.size();
         int n = (int) board.a[0].size();
         board.TilePos.resize(m*n);
@@ -26,12 +32,22 @@ namespace GAME_PLAY {
                 current_y = 0;
             } 
         }
-        
+
+            for (int i = 0; i < 3; ++i) {
+                for (int j = 0; j < 3; ++j) std::cerr << board.a[i][j] << " ";
+                std::cerr << '\n'; 
+            }
+            std::cerr << '\n';
+            for (Tile cc : board.TilePos) std::cerr << cc.id << " " << cc.x << " " << cc.y << '\n';
+            exit(0);
+
         /// init GUI
         GUI::init();
 
         /// show destination board state
         GUI::drawBoard(board.TilePos, 1);
+
+        exit(0);
 
         SDL_Delay(30);
 
