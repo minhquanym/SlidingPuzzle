@@ -33,27 +33,16 @@ namespace GAME_PLAY {
             } 
         }
 
-            for (int i = 0; i < 3; ++i) {
-                for (int j = 0; j < 3; ++j) std::cerr << board.a[i][j] << " ";
-                std::cerr << '\n'; 
-            }
-            std::cerr << '\n';
-            for (Tile cc : board.TilePos) std::cerr << cc.id << " " << cc.x << " " << cc.y << '\n';
-            exit(0);
-
         /// init GUI
         GUI::init();
+        GUI::loadMedia();
+        GUI::setGridSize(3);
 
         /// show destination board state
         GUI::drawBoard(board.TilePos, 1);
 
-        exit(0);
-
-        SDL_Delay(30);
-
         /// initalize start board state
         // board = Solution_And_Random_Board::RandomStart();
-        GUI::drawBoard(board.TilePos, 1);
     }
 
     void moveBoard(Board &board, int addX, int addY) {
@@ -109,6 +98,7 @@ namespace GAME_PLAY {
                     break;
                 case SDLK_ESCAPE:
                     /// out GAME
+                    GUI::destroy();
                     break;
             }
 
