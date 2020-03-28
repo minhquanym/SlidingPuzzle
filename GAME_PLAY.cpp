@@ -1,4 +1,4 @@
-#include <SDL/SDL2.h>
+#include <SDL2/SDL.h>
 
 #include "Board.cpp"
 #include "Tile.cpp"
