@@ -175,6 +175,8 @@ namespace GUI {
     };
 
     LTexture gTextTexture;
+    LTexture gImageTexture;
+    std::vector<SDL_Rect> gTileClips;
 
     bool init() {
 
@@ -217,7 +219,23 @@ namespace GUI {
     }
 
     bool loadMedia() {
-
+        
+        // Load image
+        if (!gImageTexture.loadFromFile("assets/catpic.jpg")) {
+            printf("Failed to load picture");
+            return false;
+        }
+        gTileClips.resize(gridSize*gridSize);
+        for (int i = 0; i < gridSize; i++)
+            for (int j = 0; j < gridSize; j++) {
+                int id = j*gridSize + i + 1;
+                if (id == gridSize*gridSize) continue;
+                gTileClips[id].x = i*TILE_SIZE;
+                gTileClips[id].y = j*TILE_SIZE;
+                gTileClips[id].w = TILE_SIZE;
+                gTileClips[id].h = TILE_SIZE;
+            }
+        // Load font 
         gFont = TTF_OpenFont("assets/neuropol.ttf", 50);
         if (gFont == NULL) {
             printf( "Failed to load font! SDL_ttf Error: %s\n", TTF_GetError() );
@@ -265,28 +283,27 @@ namespace GUI {
         SDL_RenderFillRect(gRenderer, &boardRect);
 
         for (auto tile : board) {
+            if (tile.id == 0) continue;
+
             int x = tile.x;
             int y = tile.y;
             SDL_Rect tileRect = {x, y, TILE_SIZE, TILE_SIZE};
 
-            if (tile.id == 0) continue;
-
-            // Render tile   
-            SDL_SetRenderDrawColor(gRenderer, 57, 107, 56, 1); // padding tile
-            
-            SDL_RenderFillRect(gRenderer, &tileRect);
-
-            /// NOT COMPLETE
-            
-            if (drawNumber) {
+            if (true) {
+                gImageTexture.render(x, y, &gTileClips[tile.id]);
+            }
+            else {
+                // Use when debug
+                // Render tile   
+                SDL_SetRenderDrawColor(gRenderer, 57, 107, 56, 1); // padding tile
+                
+                SDL_RenderFillRect(gRenderer, &tileRect);
+            }
+            if (drawNumber == 1) {
                 std::string number = std::to_string(tile.id);
                 gTextTexture.loadFromRenderedText(number, fontcolour);
                 gTextTexture.render(x + (rawSize/2 - gTextTexture.getWidth()/2),
                                     y + (rawSize/2 - gTextTexture.getHeight()/2));
-            }
-            else {
-                if (tile.id == 0) continue;
-                
             }
         }
         SDL_RenderPresent(gRenderer);
