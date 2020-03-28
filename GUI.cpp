@@ -228,7 +228,7 @@ namespace GUI {
         gTileClips.resize(gridSize*gridSize);
         for (int i = 0; i < gridSize; i++)
             for (int j = 0; j < gridSize; j++) {
-                int id = j*gridSize + i + 1;
+                int id = i*gridSize + j + 1;
                 if (id == gridSize*gridSize) continue;
                 gTileClips[id].x = i*TILE_SIZE;
                 gTileClips[id].y = j*TILE_SIZE;
