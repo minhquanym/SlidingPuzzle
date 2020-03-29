@@ -7,13 +7,13 @@
 
 
 namespace GUI {
-    const int WINDOW_WIDTH = 1080;
-    const int WINDOW_HEIGHT = 720;
+    const int WINDOW_WIDTH = 800;
+    const int WINDOW_HEIGHT = 600;
     const int WINDOW_PADDING = 50;
 
     int gridSize = 3;
     int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
-    int TILE_PADDING = 5;
+    int TILE_PADDING = rawSize/30;
     int TILE_SIZE = rawSize - 2*TILE_PADDING;
 
     SDL_Colour fontcolour = {112, 20, 82};
@@ -271,7 +271,7 @@ namespace GUI {
     void setGridSize(const int& n) {
         int gridSize = 3;
         int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
-        int TILE_PADDING = 5;
+        int TILE_PADDING = rawSize/30;
         int TILE_SIZE = rawSize - 2*TILE_PADDING;
 
         std::cerr<<"gridSize: "<<gridSize<<'\n';
@@ -286,30 +286,27 @@ namespace GUI {
 
         // Render background
         SDL_Rect backgroundRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-        SDL_SetRenderDrawColor(gRenderer, 148, 247, 239, 1);
+        SDL_SetRenderDrawColor(gRenderer, 88, 55, 128, 1);
         SDL_RenderFillRect(gRenderer, &backgroundRect);
 
         // Render empty board
-        SDL_Rect boardRect = {WINDOW_PADDING, WINDOW_PADDING, rawSize*gridSize, rawSize*gridSize};
-        SDL_SetRenderDrawColor(gRenderer, 214, 211, 184, 1);
-        SDL_RenderFillRect(gRenderer, &boardRect);
+        // SDL_Rect boardRect = {WINDOW_PADDING, WINDOW_PADDING, rawSize*gridSize, rawSize*gridSize};
+        // SDL_SetRenderDrawColor(gRenderer, 214, 211, 184, 1);
+        // SDL_RenderFillRect(gRenderer, &boardRect);
 
         for (auto tile : board) {
             if (tile.id == 0) continue;
             int x = tile.x + WINDOW_PADDING + TILE_PADDING;
             int y = tile.y + WINDOW_PADDING + TILE_PADDING;
-            SDL_Rect tileRect = {x, y, TILE_SIZE, TILE_SIZE};
 
-            if (true) {
-                gImageTexture.render(x, y, &gTileClips[tile.id]);
-            }
-            else {
-                // Use when debug
-                // Render tile   
-                SDL_SetRenderDrawColor(gRenderer, 57, 107, 56, 1); // padding tile
+            // Draw shadow
+            SDL_Rect shadowRect = {x+5, y+5, TILE_SIZE, TILE_SIZE};
+            SDL_SetRenderDrawColor(gRenderer, 42, 45, 56, 1);
+            SDL_RenderFillRect(gRenderer, &shadowRect);
+
+            gImageTexture.render(x, y, &gTileClips[tile.id]);
+
                 
-                SDL_RenderFillRect(gRenderer, &tileRect);
-            }
             if (drawNumber == 1) {
                 std::string number = std::to_string(tile.id);
                 gTextTexture.loadFromRenderedText(number, fontcolour);
