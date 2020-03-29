@@ -15,13 +15,13 @@ namespace GUI {
     const int BUTTON_HEIGHT = 50;
     const int TOTAL_BUTTONS = 3;
     
-    enum LButtonSprite
+    enum LButtonState
     {
-        BUTTON_SPRITE_MOUSE_OUT = 0,
-        BUTTON_SPRITE_MOUSE_OVER_MOTION = 1,
-        BUTTON_SPRITE_MOUSE_DOWN = 2,
-        BUTTON_SPRITE_MOUSE_UP = 3,
-        BUTTON_SPRITE_TOTAL = 4
+        BUTTON_MOUSE_OUT = 0,
+        BUTTON_MOUSE_OVER_MOTION = 1,
+        BUTTON_MOUSE_DOWN = 2,
+        BUTTON_MOUSE_UP = 3,
+        BUTTON_TOTAL = 4
     };
 
     int gridSize = 3;
@@ -205,7 +205,7 @@ namespace GUI {
             LButton() {
                 mPosition.x = 0;
                 mPosition.y = 0;
-                mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
+                mCurrentState = BUTTON_MOUSE_OUT;
             }
 
             //Sets top left position
@@ -252,7 +252,7 @@ namespace GUI {
                     //Mouse is outside button
                     if( !inside )
                     {
-                        mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
+                        mCurrentState = BUTTON_MOUSE_OUT;
                     }
                     //Mouse is inside button
                     else
@@ -261,15 +261,15 @@ namespace GUI {
                         switch( e->type )
                         {
                             case SDL_MOUSEMOTION:
-                            mCurrentSprite = BUTTON_SPRITE_MOUSE_OVER_MOTION;
+                            mCurrentState = BUTTON_MOUSE_OVER_MOTION;
                             break;
                         
                             case SDL_MOUSEBUTTONDOWN:
-                            mCurrentSprite = BUTTON_SPRITE_MOUSE_DOWN;
+                            mCurrentState = BUTTON_MOUSE_DOWN;
                             break;
                             
                             case SDL_MOUSEBUTTONUP:
-                            mCurrentSprite = BUTTON_SPRITE_MOUSE_UP;
+                            mCurrentState = BUTTON_MOUSE_UP;
                             break;
                         }
                     }
@@ -282,9 +282,22 @@ namespace GUI {
                 int y = mPosition.y;
                 drawRectangle(x+TILE_PADDING, y+TILE_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT,
                             42, 45, 46, 1);
-    
+
+                Uint8 r = 161, g = 181, b = 175;
+                switch (mCurrentState) {
+
+                    case BUTTON_MOUSE_DOWN:
+                        x += TILE_PADDING;
+                        y += TILE_PADDING;
+                        break;
+                    case BUTTON_MOUSE_OVER_MOTION:
+                        r = 121, g = 130, b = 127;
+                        break;
+                    default:
+                        break;
+                }
                 drawRectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT,
-                                161, 181, 175, 1);
+                                    r, g, b, 1);
                 gTextTextureSmall.loadFromRenderedText(mName, fontcolour, gFontSmall);
                 gTextTextureSmall.render(x + (BUTTON_WIDTH-gTextTextureSmall.getWidth())/2,
                                          y + (BUTTON_HEIGHT-gTextTextureSmall.getHeight())/2);
@@ -296,7 +309,7 @@ namespace GUI {
             SDL_Point mPosition;
             std::string mName;
             //Currently used global sprite
-            LButtonSprite mCurrentSprite;
+            LButtonState mCurrentState;
     };
 
 
@@ -395,6 +408,9 @@ namespace GUI {
         int TILE_PADDING = rawSize/20;
         int TILE_SIZE = rawSize - 2*TILE_PADDING;
 
+        gButtons[0].setPosition(WINDOW_PADDING + rawSize*gridSize + 50, WINDOW_PADDING + 50);
+        gButtons[0].setName("PAUSE");
+
         std::cerr<<"gridSize: "<<gridSize<<'\n';
         std::cerr<<"rawSize: "<<rawSize<<'\n';
         std::cerr<<"TILE_SIZE: "<<TILE_SIZE<<'\n';
@@ -428,8 +444,6 @@ namespace GUI {
                                     y + (rawSize/2 - gTextTexture.getHeight()/2));
             }
         }
-        gButtons[0].setPosition(WINDOW_PADDING + rawSize*gridSize + 50, WINDOW_PADDING + 50);
-        gButtons[0].setName("PAUSE");
         gButtons[0].render();
 
         SDL_RenderPresent(gRenderer);

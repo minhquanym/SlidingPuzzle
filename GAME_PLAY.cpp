@@ -69,6 +69,8 @@ namespace GAME_PLAY {
                 if (event.type == SDL_QUIT) {
                     quit = true;
                 }
+                for (int i = 0; i < 1; i++)
+                    GUI::gButtons[i].handleEvent(&event);
                 if ( event.type != SDL_KEYDOWN ) continue;
 
                 switch (event.key.keysym.sym) {
