@@ -7,12 +7,12 @@
 
 
 namespace GUI {
-    const int WINDOW_WIDTH = 800;
-    const int WINDOW_HEIGHT = 600;
-    const int WINDOW_PADDING = 75;
+    const int WINDOW_WIDTH = 1080;
+    const int WINDOW_HEIGHT = 720;
+    const int WINDOW_PADDING = 100;
 
     int gridSize = 3;
-    int rawSize = (WINDOW_WIDTH - 5*WINDOW_PADDING) / gridSize;
+    int rawSize = (WINDOW_WIDTH - 2*WINDOW_PADDING) / gridSize;
     int TILE_PADDING = 2;
     int TILE_SIZE = rawSize - 2*TILE_PADDING;
 
@@ -221,16 +221,17 @@ namespace GUI {
     bool loadMedia() {
         
         // Load image
-        if (!gImageTexture.loadFromFile("assets/catpic.jpg")) {
+        if (!gImageTexture.loadFromFile("assets/cat1080.jpg")) {
             printf("Failed to load picture");
             return false;
         }
         gTileClips.resize(gridSize*gridSize);
+        int startWidth = (gImageTexture.getWidth() - TILE_SIZE*gridSize)/2;
         for (int i = 0; i < gridSize; i++)
             for (int j = 0; j < gridSize; j++) {
                 int id = i*gridSize + j + 1;
                 if (id == gridSize*gridSize) continue;
-                gTileClips[id].x = j*TILE_SIZE;
+                gTileClips[id].x = startWidth + j*TILE_SIZE;
                 gTileClips[id].y = i*TILE_SIZE;
                 gTileClips[id].w = TILE_SIZE;
                 gTileClips[id].h = TILE_SIZE;
@@ -263,7 +264,7 @@ namespace GUI {
 
     void setGridSize(const int& n) {
         int gridSize = 3;
-        int rawSize = (WINDOW_WIDTH - 2*WINDOW_PADDING) / gridSize;
+        int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
         int TILE_PADDING = 5;
         int TILE_SIZE = rawSize - 2*TILE_PADDING;
     }
@@ -284,9 +285,10 @@ namespace GUI {
 
         for (auto tile : board) {
             if (tile.id == 0) continue;
-
-            int x = tile.x;
-            int y = tile.y;
+            int idRow = (tile.id-1)/gridSize;
+            int idCol = (tile.id-1)%gridSize;
+            int x = tile.x + WINDOW_PADDING + 2*TILE_PADDING;
+            int y = tile.y + WINDOW_PADDING + 2*TILE_PADDING;
             SDL_Rect tileRect = {x, y, TILE_SIZE, TILE_SIZE};
 
             if (true) {

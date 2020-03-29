@@ -13,10 +13,8 @@ namespace GAME_PLAY {
             for (int i = 0; i < 3; ++i) board.a[i].resize(3);
 
             int cc = 0;
-            for (int j = 0; j < 3; ++j) for (int i = 0; i < 3; ++i) board.a[i][j] = (++cc) % 9; 
+            for (int i = 0; i < 3; ++i) for (int j = 0; j < 3; ++j) board.a[i][j] = (++cc) % 9; 
             board.Space_location = std::make_pair(2, 2);
-
-            board.debug_board();
 
         int m = (int) board.a.size();
         int n = (int) board.a[0].size();
@@ -30,11 +28,11 @@ namespace GAME_PLAY {
             board.TilePos[id].y = current_y;
             board.TilePos[id].current_speed = SPEED;
 
-            current_x += GUI::TILE_SIZE + GUI::TILE_PADDING + 10;
+            current_y += GUI::TILE_SIZE + GUI::TILE_PADDING + 10;
             if (++cnt == n) {
                 cnt = 0;
-                current_y += GUI::TILE_SIZE + GUI::TILE_PADDING + 10;
-                current_x = 0;
+                current_x += GUI::TILE_SIZE + GUI::TILE_PADDING + 10;
+                current_y = 0;
             } 
         }
 
@@ -60,10 +58,6 @@ namespace GAME_PLAY {
         Tile saveTile = board.TilePos[st];
 
         addX = -addX; addY = -addY;
-        // std::cerr << board.TilePos[st].x << " " << board.TilePos[st].y << '\n';
-        // std::cerr << board.TilePos[fi].x << " " << board.TilePos[fi].y << '\n';
-        // std::cerr << addX << " " << addY << "\n\n";
-
         while ( board.TilePos[st] != board.TilePos[fi] ) {    
             board.TilePos[st].x += board.TilePos[st].current_speed * addX;
             board.TilePos[st].y += board.TilePos[st].current_speed * addY;
@@ -82,43 +76,48 @@ namespace GAME_PLAY {
         board.TilePos[fi].x = saveTile.x;
         board.TilePos[fi].y = saveTile.y;
         board.Space_location = std::make_pair( Start_x, Start_y );
-
-        // board.debug_board();
     }
 
     void PLAY() {
         SDL_Event event;
 
-        while ( SDL_WaitEvent(&event) ) {
-            if ( event.type != SDL_KEYDOWN ) continue;
+        bool quit = false;
+        while (!quit) {
+            while ( SDL_PollEvent(&event) ) {
 
-            switch (event.key.keysym.sym) {
-                case SDLK_UP:
-                    moveBoard(board, 0, 1);
-                    break;
-                case SDLK_DOWN:
-                    moveBoard(board, 0, -1);
-                    break;
-                case SDLK_LEFT:
-                    moveBoard(board, 1, 0);
-                    break;
-                case SDLK_RIGHT:
-                    moveBoard(board, -1, 0);
-                    break;
-                case SDLK_s:
-                    ///solution
-                    break;
-                case SDLK_ESCAPE:
-                    /// out GAME
-                    GUI::destroy();
-                    break;
+                if (event.type == SDL_QUIT) {
+                    quit = true;
+                }
+                if ( event.type != SDL_KEYDOWN ) continue;
+
+                switch (event.key.keysym.sym) {
+                    case SDLK_UP:
+                        moveBoard(board, 0, 1);
+                        break;
+                    case SDLK_DOWN:
+                        moveBoard(board, 0, -1);
+                        break;
+                    case SDLK_LEFT:
+                        moveBoard(board, 1, 0);
+                        break;
+                    case SDLK_RIGHT:
+                        moveBoard(board, -1, 0);
+                        break;
+                    case SDLK_s:
+                        ///solution
+                        break;
+                    case SDLK_ESCAPE:
+                        /// out GAME
+                        GUI::destroy();
+                        break;
+                }
+
+                // if ( board.winGame() ) {
+                //     std::cout << "Accept\n";
+                //     break;
+                // }
             }
-
-            // if ( board.winGame() ) {
-            //     std::cout << "Accept\n";
-            //     break;
-            // }
         }
+        
     }
 } 
-
