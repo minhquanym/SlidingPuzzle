@@ -9,11 +9,11 @@
 namespace GUI {
     const int WINDOW_WIDTH = 1080;
     const int WINDOW_HEIGHT = 720;
-    const int WINDOW_PADDING = 100;
+    const int WINDOW_PADDING = 50;
 
     int gridSize = 3;
-    int rawSize = (WINDOW_WIDTH - 2*WINDOW_PADDING) / gridSize;
-    int TILE_PADDING = 2;
+    int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
+    int TILE_PADDING = 5;
     int TILE_SIZE = rawSize - 2*TILE_PADDING;
 
     SDL_Colour fontcolour = {112, 20, 82};
@@ -221,21 +221,27 @@ namespace GUI {
     bool loadMedia() {
         
         // Load image
-        if (!gImageTexture.loadFromFile("assets/cat1080.jpg")) {
+        if (!gImageTexture.loadFromFile("assets/cat600.jpg")) {
             printf("Failed to load picture");
             return false;
         }
         gTileClips.resize(gridSize*gridSize);
-        int startWidth = (gImageTexture.getWidth() - TILE_SIZE*gridSize)/2;
+        int startWidth = (gImageTexture.getHeight() - TILE_SIZE*gridSize)/2;
+        std::cerr<<"startWidth: "<<startWidth<<'\n';
         for (int i = 0; i < gridSize; i++)
             for (int j = 0; j < gridSize; j++) {
                 int id = i*gridSize + j + 1;
                 if (id == gridSize*gridSize) continue;
                 gTileClips[id].x = startWidth + j*TILE_SIZE;
-                gTileClips[id].y = i*TILE_SIZE;
+                gTileClips[id].y = startWidth + i*TILE_SIZE;
                 gTileClips[id].w = TILE_SIZE;
                 gTileClips[id].h = TILE_SIZE;
             }
+        // Debug clips 
+        // std::cerr<<"Debug Clips Image"<<'\n';
+        // for (int i = 1; i < gridSize*gridSize; i++) {
+        //     std::cerr <<gTileClips[i].x <<' '<<gTileClips[i].y<<'\n';
+        // }
         // Load font 
         gFont = TTF_OpenFont("assets/neuropol.ttf", 50);
         if (gFont == NULL) {
@@ -290,8 +296,6 @@ namespace GUI {
 
         for (auto tile : board) {
             if (tile.id == 0) continue;
-            int idRow = (tile.id-1)/gridSize;
-            int idCol = (tile.id-1)%gridSize;
             int x = tile.x + WINDOW_PADDING + TILE_PADDING;
             int y = tile.y + WINDOW_PADDING + TILE_PADDING;
             SDL_Rect tileRect = {x, y, TILE_SIZE, TILE_SIZE};

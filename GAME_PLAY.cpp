@@ -8,6 +8,12 @@ namespace GAME_PLAY {
     void SETUP() {
         std::cout << ".......Loading game data.......\n";
 
+        /// init GUI
+        GUI::init();
+        GUI::loadMedia();
+        GUI::setGridSize(3);
+
+        
         /// initalize tile information
         board.a.resize(3);
         for (int i = 0; i < 3; ++i) board.a[i].resize(3);
@@ -30,18 +36,15 @@ namespace GAME_PLAY {
             board.TilePos[id].y = current_y;
             board.TilePos[id].current_speed = SPEED;
 
-            current_x += GUI::TILE_SIZE + GUI::TILE_PADDING + 10;
+            current_x += GUI::rawSize;
             if (++cnt == n) {
                 cnt = 0;
-                current_y += GUI::TILE_SIZE + GUI::TILE_PADDING + 10;
+                current_y += GUI::rawSize;
                 current_x = 0;
             } 
         }
 
-        /// init GUI
-        GUI::init();
-        GUI::loadMedia();
-        GUI::setGridSize(3);
+        
 
         /// show destination board state
         GUI::drawBoard(board.TilePos, 1);
