@@ -11,9 +11,22 @@ namespace GUI {
     const int WINDOW_HEIGHT = 600;
     const int WINDOW_PADDING = 50;
 
+    const int BUTTON_WIDTH = 150;
+    const int BUTTON_HEIGHT = 50;
+    const int TOTAL_BUTTONS = 3;
+    
+    enum LButtonSprite
+    {
+        BUTTON_SPRITE_MOUSE_OUT = 0,
+        BUTTON_SPRITE_MOUSE_OVER_MOTION = 1,
+        BUTTON_SPRITE_MOUSE_DOWN = 2,
+        BUTTON_SPRITE_MOUSE_UP = 3,
+        BUTTON_SPRITE_TOTAL = 4
+    };
+
     int gridSize = 3;
     int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
-    int TILE_PADDING = rawSize/30;
+    int TILE_PADDING = rawSize/20;
     int TILE_SIZE = rawSize - 2*TILE_PADDING;
 
     SDL_Colour fontcolour = {112, 20, 82};
@@ -26,6 +39,7 @@ namespace GUI {
 
     //Global font
     TTF_Font *gFont = NULL;
+    TTF_Font *gFontSmall = NULL;
 
 
     //Texture wrapper class
@@ -86,11 +100,11 @@ namespace GUI {
             }
             
             //Creates image from font string
-            bool loadFromRenderedText( std::string textureText, SDL_Color textColor ) {
+            bool loadFromRenderedText( std::string textureText, SDL_Color textColor, TTF_Font* font) {
                 free();
 
                 //Render text surface
-                SDL_Surface* textSurface = TTF_RenderText_Solid( gFont, textureText.c_str(), textColor );
+                SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor );
                 if( textSurface == NULL )
                 {
                     printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
@@ -174,9 +188,119 @@ namespace GUI {
             int mHeight;
     };
 
-    LTexture gTextTexture;
+    LTexture gTextTexture, gTextTextureSmall;
     LTexture gImageTexture;
     std::vector<SDL_Rect> gTileClips;
+        
+    void drawRectangle(int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+        SDL_Rect rect = {x, y, w, h};
+        SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
+        SDL_RenderFillRect(gRenderer, &rect);
+    }
+    //The mouse button
+    class LButton
+    {
+        public:
+            //Initializes internal variables
+            LButton() {
+                mPosition.x = 0;
+                mPosition.y = 0;
+                mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
+            }
+
+            //Sets top left position
+            void setPosition( int x, int y ) {
+                mPosition.x = x;
+	            mPosition.y = y;
+            }
+            void setName(std::string s) {
+                mName = s;
+            }
+            //Handles mouse event
+            void handleEvent( SDL_Event* e ) {
+                //If mouse event happened
+                if( e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP )
+                {
+                    //Get mouse position
+                    int x, y;
+                    SDL_GetMouseState( &x, &y );
+
+                    //Check if mouse is in button
+                    bool inside = true;
+
+                    //Mouse is left of the button
+                    if( x < mPosition.x )
+                    {
+                        inside = false;
+                    }
+                    //Mouse is right of the button
+                    else if( x > mPosition.x + BUTTON_WIDTH )
+                    {
+                        inside = false;
+                    }
+                    //Mouse above the button
+                    else if( y < mPosition.y )
+                    {
+                        inside = false;
+                    }
+                    //Mouse below the button
+                    else if( y > mPosition.y + BUTTON_HEIGHT )
+                    {
+                        inside = false;
+                    }
+
+                    //Mouse is outside button
+                    if( !inside )
+                    {
+                        mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
+                    }
+                    //Mouse is inside button
+                    else
+                    {
+                        //Set mouse over sprite
+                        switch( e->type )
+                        {
+                            case SDL_MOUSEMOTION:
+                            mCurrentSprite = BUTTON_SPRITE_MOUSE_OVER_MOTION;
+                            break;
+                        
+                            case SDL_MOUSEBUTTONDOWN:
+                            mCurrentSprite = BUTTON_SPRITE_MOUSE_DOWN;
+                            break;
+                            
+                            case SDL_MOUSEBUTTONUP:
+                            mCurrentSprite = BUTTON_SPRITE_MOUSE_UP;
+                            break;
+                        }
+                    }
+                }
+            }
+        
+            //Shows button sprite
+            void render() {
+                int x = mPosition.x;
+                int y = mPosition.y;
+                drawRectangle(x+TILE_PADDING, y+TILE_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT,
+                            42, 45, 46, 1);
+    
+                drawRectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT,
+                                161, 181, 175, 1);
+                gTextTextureSmall.loadFromRenderedText(mName, fontcolour, gFontSmall);
+                gTextTextureSmall.render(x + (BUTTON_WIDTH-gTextTextureSmall.getWidth())/2,
+                                         y + (BUTTON_HEIGHT-gTextTextureSmall.getHeight())/2);
+                
+            }
+
+        private:
+            //Top left position
+            SDL_Point mPosition;
+            std::string mName;
+            //Currently used global sprite
+            LButtonSprite mCurrentSprite;
+    };
+
+
+    LButton gButtons[ TOTAL_BUTTONS ];
 
     bool init() {
 
@@ -237,18 +361,15 @@ namespace GUI {
                 gTileClips[id].w = TILE_SIZE;
                 gTileClips[id].h = TILE_SIZE;
             }
-        // Debug clips 
-        // std::cerr<<"Debug Clips Image"<<'\n';
-        // for (int i = 1; i < gridSize*gridSize; i++) {
-        //     std::cerr <<gTileClips[i].x <<' '<<gTileClips[i].y<<'\n';
-        // }
         // Load font 
         gFont = TTF_OpenFont("assets/neuropol.ttf", 50);
+        gFontSmall = TTF_OpenFont("assets/neuropol.ttf", 25);
+
         if (gFont == NULL) {
             printf( "Failed to load font! SDL_ttf Error: %s\n", TTF_GetError() );
             return false;
         }
-        if (!gTextTexture.loadFromRenderedText("The world needs you", fontcolour)) {
+        if (!gTextTexture.loadFromRenderedText("The world needs you", fontcolour, gFont)) {
             printf( "Failed to render text texture!\n" );
 			return false;
         }
@@ -271,7 +392,7 @@ namespace GUI {
     void setGridSize(const int& n) {
         int gridSize = 3;
         int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
-        int TILE_PADDING = rawSize/30;
+        int TILE_PADDING = rawSize/20;
         int TILE_SIZE = rawSize - 2*TILE_PADDING;
 
         std::cerr<<"gridSize: "<<gridSize<<'\n';
@@ -279,20 +400,14 @@ namespace GUI {
         std::cerr<<"TILE_SIZE: "<<TILE_SIZE<<'\n';
         std::cerr<<"TILE_PADDING: "<<TILE_PADDING<<'\n';
     }
-    
+
     void drawBoard(const std::vector<Tile> board, const bool& drawNumber) {
 
         SDL_RenderClear(gRenderer);
 
         // Render background
-        SDL_Rect backgroundRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-        SDL_SetRenderDrawColor(gRenderer, 88, 55, 128, 1);
-        SDL_RenderFillRect(gRenderer, &backgroundRect);
-
-        // Render empty board
-        // SDL_Rect boardRect = {WINDOW_PADDING, WINDOW_PADDING, rawSize*gridSize, rawSize*gridSize};
-        // SDL_SetRenderDrawColor(gRenderer, 214, 211, 184, 1);
-        // SDL_RenderFillRect(gRenderer, &boardRect);
+        drawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 
+                        88, 55, 128, 1);
 
         for (auto tile : board) {
             if (tile.id == 0) continue;
@@ -300,20 +415,23 @@ namespace GUI {
             int y = tile.y + WINDOW_PADDING + TILE_PADDING;
 
             // Draw shadow
-            SDL_Rect shadowRect = {x+5, y+5, TILE_SIZE, TILE_SIZE};
-            SDL_SetRenderDrawColor(gRenderer, 42, 45, 56, 1);
-            SDL_RenderFillRect(gRenderer, &shadowRect);
+            drawRectangle(x+TILE_PADDING, y+TILE_PADDING, TILE_SIZE, TILE_SIZE,
+                            42, 45, 46, 1);
 
             gImageTexture.render(x, y, &gTileClips[tile.id]);
 
                 
             if (drawNumber == 1) {
                 std::string number = std::to_string(tile.id);
-                gTextTexture.loadFromRenderedText(number, fontcolour);
+                gTextTexture.loadFromRenderedText(number, fontcolour, gFont);
                 gTextTexture.render(x + (rawSize/2 - gTextTexture.getWidth()/2),
                                     y + (rawSize/2 - gTextTexture.getHeight()/2));
             }
         }
+        gButtons[0].setPosition(WINDOW_PADDING + rawSize*gridSize + 50, WINDOW_PADDING + 50);
+        gButtons[0].setName("PAUSE");
+        gButtons[0].render();
+
         SDL_RenderPresent(gRenderer);
     }
 }
