@@ -25,7 +25,7 @@ namespace GUI {
         BUTTON_TOTAL = 4
     };
 
-    int gridSize = 4;
+    int gridSize = 3;
     int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
     int TILE_PADDING = rawSize/20;
     int TILE_SIZE = rawSize - 2*TILE_PADDING;
@@ -421,10 +421,10 @@ namespace GUI {
     }
 
     void setGridSize(const int& n) {
-        int gridSize = n;
-        int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
-        int TILE_PADDING = rawSize/20;
-        int TILE_SIZE = rawSize - 2*TILE_PADDING;
+        gridSize = n;
+        rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
+        TILE_PADDING = rawSize/20;
+        TILE_SIZE = rawSize - 2*TILE_PADDING;
 
         gButtons[0].setPosition(WINDOW_PADDING + rawSize*gridSize + 50, WINDOW_PADDING + 50);
         gButtons[0].setName("PAUSE");

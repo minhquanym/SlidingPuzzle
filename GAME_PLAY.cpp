@@ -12,8 +12,8 @@ namespace GAME_PLAY {
 
         /// init GUI
         GUI::init();
-        GUI::loadMedia();
         GUI::setGridSize(4);
+        GUI::loadMedia();
         
         /// initalize tile information
         board.destination(4, GUI::rawSize);
