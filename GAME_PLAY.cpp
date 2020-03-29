@@ -47,6 +47,8 @@ namespace GAME_PLAY {
 
             if (board.TilePos[st].y * addY > board.TilePos[fi].y * addY) 
                 board.TilePos[st].y = board.TilePos[fi].y;
+            
+            GUI::drawBoard(board.TilePos, 1);
         }
         
         /// update for new board

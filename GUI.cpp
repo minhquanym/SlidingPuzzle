@@ -279,7 +279,6 @@ namespace GUI {
         
             //Shows button sprite
             void render() {
-                std::cerr<<"Hello"<<'\n';
 
                 int &x = mPosition.x;
                 int &y = mPosition.y;
