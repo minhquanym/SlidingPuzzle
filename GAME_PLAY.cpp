@@ -2,7 +2,6 @@
 #include "GUI.cpp"
 
 namespace GAME_PLAY {
-    const int SPEED = 10;
     Board board;
 
     void SETUP() {
@@ -15,36 +14,7 @@ namespace GAME_PLAY {
 
         
         /// initalize tile information
-        board.a.resize(3);
-        for (int i = 0; i < 3; ++i) board.a[i].resize(3);
-
-            int cc = 0;
-            for (int j = 0; j < 3; ++j) for (int i = 0; i < 3; ++i) board.a[i][j] = (++cc) % 9; 
-            board.Space_location = std::make_pair(2, 2);
-
-            board.debug_board();
-
-        int m = (int) board.a.size();
-        int n = (int) board.a[0].size();
-        board.TilePos.resize(m*n);
-
-        int current_x = 0, current_y = 0, cnt = 0;
-        for (int i = 1; i <= m*n; ++i) {
-            int id = i % (m*n);
-            board.TilePos[id].id = id;
-            board.TilePos[id].x = current_x;
-            board.TilePos[id].y = current_y;
-            board.TilePos[id].current_speed = SPEED;
-
-            current_x += GUI::rawSize;
-            if (++cnt == n) {
-                cnt = 0;
-                current_y += GUI::rawSize;
-                current_x = 0;
-            } 
-        }
-
-        
+        board.destination(3, GUI::rawSize);
 
         /// show destination board state
         GUI::drawBoard(board.TilePos, 1);
