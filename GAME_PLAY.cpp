@@ -9,8 +9,8 @@ namespace GAME_PLAY {
         std::cout << ".......Loading game data.......\n";
 
         /// initalize tile information
-            board.a.resize(3);
-            for (int i = 0; i < 3; ++i) board.a[i].resize(3);
+        board.a.resize(3);
+        for (int i = 0; i < 3; ++i) board.a[i].resize(3);
 
             int cc = 0;
             for (int j = 0; j < 3; ++j) for (int i = 0; i < 3; ++i) board.a[i][j] = (++cc) % 9; 
@@ -114,10 +114,13 @@ namespace GAME_PLAY {
                     break;
             }
 
-            // if ( board.winGame() ) {
-            //     std::cout << "Accept\n";
-            //     break;
-            // }
+            board.debug_board();
+
+            if ( board.winGame() ) {
+                std::cout << "Accept\n";
+                SDL_Delay(500);
+                break;
+            }
         }
     }
 } 
