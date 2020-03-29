@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include "GUI.cpp"
+#include "Solution.cpp"
 
 namespace GAME_PLAY {
     Board board;
@@ -60,6 +61,11 @@ namespace GAME_PLAY {
     }
 
     void PLAY() {
+        // std::swap(board.a[2][2], board.a[1][2]);
+        // std::swap(board.a[1][2], board.a[1][0]);
+        // Solution::Solution_A_star(board);
+        // exit(0);
+
         SDL_Event event;
 
         bool quit = false;
@@ -86,6 +92,11 @@ namespace GAME_PLAY {
                         break;
                     case SDLK_s:
                         ///solution
+                        Solution::Solution_A_star(board);
+                        std::cerr << "AFTER:\n";
+                        board.debug_board();
+                        for (std::pair<int, int> foo : Solution::lsTrace) 
+                            moveBoard(board, foo.first, foo.second);
                         break;
                     case SDLK_ESCAPE:
                         /// out GAME
@@ -93,7 +104,7 @@ namespace GAME_PLAY {
                         break;
                 }
 
-                board.debug_board();
+                // board.debug_board();
 
                 if ( board.winGame() ) {
                     std::cout << "Accept\n";
