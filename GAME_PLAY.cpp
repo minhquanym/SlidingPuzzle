@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include "GUI.cpp"
+#include "Solution.cpp"
 
 namespace GAME_PLAY {
     Board board;
@@ -46,8 +47,6 @@ namespace GAME_PLAY {
 
             if (board.TilePos[st].y * addY > board.TilePos[fi].y * addY) 
                 board.TilePos[st].y = board.TilePos[fi].y;
-
-            GUI::drawBoard(board.TilePos, 1);
         }
         
         /// update for new board
@@ -60,6 +59,11 @@ namespace GAME_PLAY {
     }
 
     void PLAY() {
+        // std::swap(board.a[2][2], board.a[1][2]);
+        // std::swap(board.a[1][2], board.a[1][0]);
+        // Solution::Solution_A_star(board);
+        // exit(0);
+
         SDL_Event event;
 
         bool quit = false;
@@ -69,39 +73,45 @@ namespace GAME_PLAY {
                 if (event.type == SDL_QUIT) {
                     quit = true;
                 }
+                if ( event.type != SDL_KEYDOWN ) {
+                    switch (event.key.keysym.sym) {
+                        case SDLK_UP:
+                            moveBoard(board, 0, 1);
+                            break;
+                        case SDLK_DOWN:
+                            moveBoard(board, 0, -1);
+                            break;
+                        case SDLK_LEFT:
+                            moveBoard(board, 1, 0);
+                            break;
+                        case SDLK_RIGHT:
+                            moveBoard(board, -1, 0);
+                            break;
+                        case SDLK_s:
+                            ///solution
+                            Solution::Solution_A_star(board);
+                            std::cerr << "AFTER:\n";
+                            board.debug_board();
+                            for (std::pair<int, int> foo : Solution::lsTrace) 
+                                moveBoard(board, foo.first, foo.second);
+                            break;
+                        case SDLK_ESCAPE:
+                            /// out GAME
+                            quit = true;
+                            break;
+                    }
+                }
                 for (int i = 0; i < 1; i++)
                     GUI::gButtons[i].handleEvent(&event);
-                if ( event.type != SDL_KEYDOWN ) continue;
 
-                switch (event.key.keysym.sym) {
-                    case SDLK_UP:
-                        moveBoard(board, 0, 1);
-                        break;
-                    case SDLK_DOWN:
-                        moveBoard(board, 0, -1);
-                        break;
-                    case SDLK_LEFT:
-                        moveBoard(board, 1, 0);
-                        break;
-                    case SDLK_RIGHT:
-                        moveBoard(board, -1, 0);
-                        break;
-                    case SDLK_s:
-                        ///solution
-                        break;
-                    case SDLK_ESCAPE:
-                        /// out GAME
-                        quit = true;
-                        break;
-                }
+                GUI::drawBoard(board.TilePos, 1);
+                // board.debug_board();
 
-                board.debug_board();
-
-                if ( board.winGame() ) {
-                    std::cout << "Accept\n";
-                    SDL_Delay(500);
-                    break;
-                }
+                // if ( board.winGame() ) {
+                //     std::cout << "Accept\n";
+                //     SDL_Delay(500);
+                //     break;
+                // }
             }
         }
         GUI::destroy();

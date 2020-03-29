@@ -257,6 +257,7 @@ namespace GUI {
                     //Mouse is inside button
                     else
                     {
+
                         //Set mouse over sprite
                         switch( e->type )
                         {
@@ -278,18 +279,22 @@ namespace GUI {
         
             //Shows button sprite
             void render() {
-                int x = mPosition.x;
-                int y = mPosition.y;
+                std::cerr<<"Hello"<<'\n';
+
+                int &x = mPosition.x;
+                int &y = mPosition.y;
                 drawRectangle(x+TILE_PADDING, y+TILE_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT,
                             42, 45, 46, 1);
 
                 Uint8 r = 161, g = 181, b = 175;
                 switch (mCurrentState) {
-
                     case BUTTON_MOUSE_DOWN:
                         x += TILE_PADDING;
                         y += TILE_PADDING;
                         break;
+                    case BUTTON_MOUSE_UP:
+                        x -= TILE_PADDING;
+                        y -= TILE_PADDING;
                     case BUTTON_MOUSE_OVER_MOTION:
                         r = 121, g = 130, b = 127;
                         break;
