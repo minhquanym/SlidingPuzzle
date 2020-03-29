@@ -23,7 +23,7 @@ struct Board {
         for (int j = 0; j < (int) a[0].size(); ++j) 
             for (int i = 0; i < (int) a.size(); ++i) {
                 if (a[i][j] != cnt) return false;
-                cnt = (cnt+1) % 9;
+                cnt = (cnt+1) % (int(a.size())*int(a.size()));
             }
         return true;
     }
@@ -43,7 +43,7 @@ struct Board {
 
     void destination(int gridSize, int rawSize) {
         a.resize(gridSize);
-        for (int i = 0; i < gridSize; ++i) a[i].resize(3);
+        for (int i = 0; i < gridSize; ++i) a[i].resize(gridSize);
 
             int cc = 0;
             for (int j = 0; j < gridSize; ++j) for (int i = 0; i < gridSize; ++i) a[i][j] = (++cc) % (gridSize*gridSize); 

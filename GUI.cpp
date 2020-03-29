@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "Board.cpp"
 
@@ -24,7 +25,7 @@ namespace GUI {
         BUTTON_TOTAL = 4
     };
 
-    int gridSize = 3;
+    int gridSize = 4;
     int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
     int TILE_PADDING = rawSize/20;
     int TILE_SIZE = rawSize - 2*TILE_PADDING;
@@ -40,6 +41,8 @@ namespace GUI {
     //Global font
     TTF_Font *gFont = NULL;
     TTF_Font *gFontSmall = NULL;
+
+    Mix_Chunk *gClick = NULL;
 
 
     //Texture wrapper class
@@ -197,6 +200,7 @@ namespace GUI {
         SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
         SDL_RenderFillRect(gRenderer, &rect);
     }
+    
     //The mouse button
     class LButton
     {
@@ -284,18 +288,14 @@ namespace GUI {
                 int &y = mPosition.y;
                 drawRectangle(x+TILE_PADDING, y+TILE_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT,
                             42, 45, 46, 1);
-
-                Uint8 r = 161, g = 181, b = 175;
+                
+                Uint8 r = 121, g = 130, b = 127;
                 switch (mCurrentState) {
                     case BUTTON_MOUSE_DOWN:
-                        x += TILE_PADDING;
-                        y += TILE_PADDING;
+                        Mix_PlayChannel(-1, gClick, 0);
                         break;
-                    case BUTTON_MOUSE_UP:
-                        x -= TILE_PADDING;
-                        y -= TILE_PADDING;
-                    case BUTTON_MOUSE_OVER_MOTION:
-                        r = 121, g = 130, b = 127;
+                    case BUTTON_MOUSE_OUT:
+                        r = 161, g = 181, b = 175;
                         break;
                     default:
                         break;
@@ -318,6 +318,7 @@ namespace GUI {
 
 
     LButton gButtons[ TOTAL_BUTTONS ];
+
 
     bool init() {
 
@@ -350,7 +351,10 @@ namespace GUI {
             printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
 			return false;
         }
-
+        if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 ) {
+            printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+            return false;
+        }
         //Init SDL_ttf
         if (TTF_Init() < 0) { 
             printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
@@ -378,6 +382,13 @@ namespace GUI {
                 gTileClips[id].w = TILE_SIZE;
                 gTileClips[id].h = TILE_SIZE;
             }
+        // Load audio
+        gClick = Mix_LoadWAV("assets/click.wav");
+        if (gClick == NULL) {
+            printf("Failed to load sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+            return false;
+        }
+
         // Load font 
         gFont = TTF_OpenFont("assets/neuropol.ttf", 50);
         gFontSmall = TTF_OpenFont("assets/neuropol.ttf", 25);
@@ -394,6 +405,8 @@ namespace GUI {
     }
     void destroy() {
 
+        Mix_FreeChunk(gClick);
+        gClick = NULL;
         // Destroy window
         SDL_DestroyRenderer(gRenderer);
         SDL_DestroyWindow(gWindow);
@@ -401,13 +414,14 @@ namespace GUI {
         gRenderer = NULL;
 
         // Quit het cho tao
+        Mix_Quit();
         TTF_Quit();
         IMG_Quit();
         SDL_Quit();
     }
 
     void setGridSize(const int& n) {
-        int gridSize = 3;
+        int gridSize = n;
         int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
         int TILE_PADDING = rawSize/20;
         int TILE_SIZE = rawSize - 2*TILE_PADDING;
