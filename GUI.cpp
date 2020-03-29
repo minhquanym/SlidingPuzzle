@@ -267,6 +267,11 @@ namespace GUI {
         int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
         int TILE_PADDING = 5;
         int TILE_SIZE = rawSize - 2*TILE_PADDING;
+
+        std::cerr<<"gridSize: "<<gridSize<<'\n';
+        std::cerr<<"rawSize: "<<rawSize<<'\n';
+        std::cerr<<"TILE_SIZE: "<<TILE_SIZE<<'\n';
+        std::cerr<<"TILE_PADDING: "<<TILE_PADDING<<'\n';
     }
     
     void drawBoard(const std::vector<Tile> board, const bool& drawNumber) {
