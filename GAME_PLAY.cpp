@@ -1,30 +1,39 @@
 #include <SDL2/SDL.h>
 #include "GUI.cpp"
 #include "Solution.cpp"
+#include "RandomStart.cpp"
 
 namespace GAME_PLAY {
     Board board;
+    int score = 0;
 
     void SETUP() {
         std::cout << ".......Loading game data.......\n";
 
         /// init GUI
         GUI::init();
-        GUI::setGridSize(4);
         GUI::loadMedia();
-
+        GUI::setGridSize(4);
         
         /// initalize tile information
         board.destination(4, GUI::rawSize);
 
         /// show destination board state
         GUI::drawBoard(board.TilePos, 1);
+        SDL_Delay(2000);
 
         /// initalize start board state
-        // board = Solution_And_Random_Board::RandomStart();
+        RandomStart::randomStart(board);
+        GUI::drawBoard(board.TilePos, 1);
+
+        /// init score 
+        score = (int) board.a.size() * 100;
     }
 
     void moveBoard(Board &board, int addX, int addY) {
+        score -= 5;
+        if (score <= 0) return;
+
         int Finish_x = board.Space_location.first, Finish_y = board.Space_location.second;
         int Start_x = Finish_x + addX, Start_y = Finish_y + addY;
         if ( !board.inBoard(Start_x, Start_y) ) return;
@@ -61,11 +70,6 @@ namespace GAME_PLAY {
     }
 
     void PLAY() {
-        // std::swap(board.a[2][2], board.a[1][2]);
-        // std::swap(board.a[1][2], board.a[1][0]);
-        // Solution::Solution_A_star(board);
-        // exit(0);
-
         SDL_Event event;
 
         bool quit = false;
@@ -103,17 +107,22 @@ namespace GAME_PLAY {
                             break;
                     }
                 }
+
+                if (score <= 0) {
+                    std::cout << "LOSER!!!!!\n";
+                    quit = true;
+                }
+
                 for (int i = 0; i < 1; i++)
                     GUI::gButtons[i].handleEvent(&event);
-
                 GUI::drawBoard(board.TilePos, 1);
-                // board.debug_board();
 
-                // if ( board.winGame() ) {
-                //     std::cout << "Accept\n";
-                //     SDL_Delay(500);
-                //     break;
-                // }
+                if ( board.winGame() ) {
+                    std::cout << "Accept\n";
+                    SDL_Delay(500);
+                    quit = true;
+                    break;
+                }
             }
         }
         GUI::destroy();
