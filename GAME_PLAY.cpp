@@ -3,28 +3,182 @@
 #include "Solution.cpp"
 #include "RandomStart.cpp"
 
+
 namespace GAME_PLAY {
+    const int DRAW_NUMBER = 1;
+    bool FREEZE = false;
+
+    const int BUTTON_WIDTH = 150;
+    const int BUTTON_HEIGHT = 50;
+    const int TOTAL_BUTTONS = 3;
+    
+    enum LButtonState
+    {
+        BUTTON_MOUSE_OUT = 0,
+        BUTTON_MOUSE_OVER_MOTION = 1,
+        BUTTON_MOUSE_DOWN = 2,
+        BUTTON_MOUSE_UP = 3,
+        BUTTON_TOTAL = 4
+    };
     Board board;
+    void moveBoard(Board &board, int addX, int addY);
+    void SOLVE() {
+        FREEZE = true;
+        Solution::Solution_A_star(board);
+        std::cerr << "AFTER:\n";
+        board.debug_board();
+        for (std::pair<int, int> foo : Solution::lsTrace) 
+            moveBoard(board, foo.first, foo.second);
+    }
+    //The mouse button
+    class LButton
+    {
+        public:
+            //Initializes internal variables
+            LButton() {
+                mPosition.x = 0;
+                mPosition.y = 0;
+                mCurrentState = BUTTON_MOUSE_OUT;
+            }
+
+            //Sets top left position
+            void setPosition( int x, int y ) {
+                mPosition.x = x;
+	            mPosition.y = y;
+            }
+            void setName(std::string s) {
+                mName = s;
+            }
+            //Handles mouse event
+            void handleEvent( SDL_Event* e ) {
+                //If mouse event happened
+                if( e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP )
+                {
+                    //Get mouse position
+                    int x, y;
+                    SDL_GetMouseState( &x, &y );
+
+                    //Check if mouse is in button
+                    bool inside = true;
+
+                    //Mouse is left of the button
+                    if( x < mPosition.x )
+                    {
+                        inside = false;
+                    }
+                    //Mouse is right of the button
+                    else if( x > mPosition.x + BUTTON_WIDTH )
+                    {
+                        inside = false;
+                    }
+                    //Mouse above the button
+                    else if( y < mPosition.y )
+                    {
+                        inside = false;
+                    }
+                    //Mouse below the button
+                    else if( y > mPosition.y + BUTTON_HEIGHT )
+                    {
+                        inside = false;
+                    }
+
+                    //Mouse is outside button
+                    if( !inside )
+                    {
+                        mCurrentState = BUTTON_MOUSE_OUT;
+                    }
+                    //Mouse is inside button
+                    else
+                    {
+
+                        //Set mouse over sprite
+                        switch( e->type )
+                        {
+                            case SDL_MOUSEMOTION:
+                            mCurrentState = BUTTON_MOUSE_OVER_MOTION;
+                            break;
+                        
+                            case SDL_MOUSEBUTTONDOWN:
+                            mCurrentState = BUTTON_MOUSE_DOWN;
+                            break;
+                            
+                            case SDL_MOUSEBUTTONUP:
+                            mCurrentState = BUTTON_MOUSE_UP;
+                            break;
+                        }
+                    }
+                }
+            }
+        
+            //Shows button sprite
+            void render() {
+
+                int &x = mPosition.x;
+                int &y = mPosition.y;
+                GUI::drawRectangle(x+GUI::TILE_PADDING, y+GUI::TILE_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT,
+                            42, 45, 46, 1);
+                
+                Uint8 r = 121, g = 130, b = 127;
+                switch (mCurrentState) {
+                    case BUTTON_MOUSE_DOWN:
+                        Mix_PlayChannel(-1, GUI::gClick, 0);
+                        SOLVE();
+                        break;
+                    case BUTTON_MOUSE_OUT:
+                        r = 161, g = 181, b = 175;
+                        break;
+                    default:
+                        break;
+                }
+                GUI::drawRectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT,
+                                    r, g, b, 1);
+                GUI::gTextTextureSmall.loadFromRenderedText(mName, GUI::fontcolour, GUI::gFontSmall);
+                GUI::gTextTextureSmall.render(x + (BUTTON_WIDTH-GUI::gTextTextureSmall.getWidth())/2,
+                                         y + (BUTTON_HEIGHT-GUI::gTextTextureSmall.getHeight())/2);
+                
+            }
+
+        private:
+            //Top left position
+            SDL_Point mPosition;
+            std::string mName;
+            //Currently used global sprite
+            LButtonState mCurrentState;
+    };
+
+
+    LButton gButtons[ TOTAL_BUTTONS ];
+
+    
     int score = 0;
 
+    void DRAW() {
+        GUI::clearRender();
+        GUI::drawBoard(board.TilePos, DRAW_NUMBER);
+        gButtons[0].render();
+        GUI::startRender();
+    }
+    
     void SETUP() {
         std::cout << ".......Loading game data.......\n";
 
         /// init GUI
         GUI::init();
-        GUI::setGridSize(4);
+        GUI::setGridSize(3);
+        gButtons[0].setPosition(GUI::WINDOW_PADDING + GUI::rawSize*GUI::gridSize + 50, GUI::WINDOW_PADDING + 50);
+        gButtons[0].setName("SOLVE");
         GUI::loadMedia();
         
         /// initalize tile information
-        board.destination(4, GUI::rawSize);
+        board.destination(3, GUI::rawSize);
 
         /// show destination board state
-        GUI::drawBoard(board.TilePos, 1);
+        DRAW();
         SDL_Delay(2000);
 
         /// initalize start board state
         RandomStart::randomStart(board);
-        GUI::drawBoard(board.TilePos, 1);
+        DRAW();
 
         /// init score 
         score = (int) board.a.size() * 100;
@@ -56,8 +210,7 @@ namespace GAME_PLAY {
 
             if (board.TilePos[st].y * addY > board.TilePos[fi].y * addY) 
                 board.TilePos[st].y = board.TilePos[fi].y;
-            
-            GUI::drawBoard(board.TilePos, 1);
+            DRAW();
         }
         
         /// update for new board
@@ -95,11 +248,7 @@ namespace GAME_PLAY {
                             break;
                         case SDLK_s:
                             ///solution
-                            Solution::Solution_A_star(board);
-                            std::cerr << "AFTER:\n";
-                            board.debug_board();
-                            for (std::pair<int, int> foo : Solution::lsTrace) 
-                                moveBoard(board, foo.first, foo.second);
+                            SOLVE();
                             break;
                         case SDLK_ESCAPE:
                             /// out GAME
@@ -113,9 +262,11 @@ namespace GAME_PLAY {
                     quit = true;
                 }
 
-                for (int i = 0; i < 1; i++)
-                    GUI::gButtons[i].handleEvent(&event);
-                GUI::drawBoard(board.TilePos, 1);
+                if (!FREEZE) {
+                    for (int i = 0; i < 1; i++)
+                        gButtons[i].handleEvent(&event);
+                }
+
 
                 if ( board.winGame() ) {
                     std::cout << "Accept\n";
@@ -124,6 +275,7 @@ namespace GAME_PLAY {
                     break;
                 }
             }
+            DRAW();
         }
         GUI::destroy();
     }

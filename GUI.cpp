@@ -12,19 +12,6 @@ namespace GUI {
     const int WINDOW_HEIGHT = 600;
     const int WINDOW_PADDING = 50;
 
-    const int BUTTON_WIDTH = 150;
-    const int BUTTON_HEIGHT = 50;
-    const int TOTAL_BUTTONS = 3;
-    
-    enum LButtonState
-    {
-        BUTTON_MOUSE_OUT = 0,
-        BUTTON_MOUSE_OVER_MOTION = 1,
-        BUTTON_MOUSE_DOWN = 2,
-        BUTTON_MOUSE_UP = 3,
-        BUTTON_TOTAL = 4
-    };
-
     int gridSize = 3;
     int rawSize = (WINDOW_HEIGHT - 2*WINDOW_PADDING) / gridSize;
     int TILE_PADDING = rawSize/20;
@@ -201,124 +188,7 @@ namespace GUI {
         SDL_RenderFillRect(gRenderer, &rect);
     }
     
-    //The mouse button
-    class LButton
-    {
-        public:
-            //Initializes internal variables
-            LButton() {
-                mPosition.x = 0;
-                mPosition.y = 0;
-                mCurrentState = BUTTON_MOUSE_OUT;
-            }
-
-            //Sets top left position
-            void setPosition( int x, int y ) {
-                mPosition.x = x;
-	            mPosition.y = y;
-            }
-            void setName(std::string s) {
-                mName = s;
-            }
-            //Handles mouse event
-            void handleEvent( SDL_Event* e ) {
-                //If mouse event happened
-                if( e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP )
-                {
-                    //Get mouse position
-                    int x, y;
-                    SDL_GetMouseState( &x, &y );
-
-                    //Check if mouse is in button
-                    bool inside = true;
-
-                    //Mouse is left of the button
-                    if( x < mPosition.x )
-                    {
-                        inside = false;
-                    }
-                    //Mouse is right of the button
-                    else if( x > mPosition.x + BUTTON_WIDTH )
-                    {
-                        inside = false;
-                    }
-                    //Mouse above the button
-                    else if( y < mPosition.y )
-                    {
-                        inside = false;
-                    }
-                    //Mouse below the button
-                    else if( y > mPosition.y + BUTTON_HEIGHT )
-                    {
-                        inside = false;
-                    }
-
-                    //Mouse is outside button
-                    if( !inside )
-                    {
-                        mCurrentState = BUTTON_MOUSE_OUT;
-                    }
-                    //Mouse is inside button
-                    else
-                    {
-
-                        //Set mouse over sprite
-                        switch( e->type )
-                        {
-                            case SDL_MOUSEMOTION:
-                            mCurrentState = BUTTON_MOUSE_OVER_MOTION;
-                            break;
-                        
-                            case SDL_MOUSEBUTTONDOWN:
-                            mCurrentState = BUTTON_MOUSE_DOWN;
-                            break;
-                            
-                            case SDL_MOUSEBUTTONUP:
-                            mCurrentState = BUTTON_MOUSE_UP;
-                            break;
-                        }
-                    }
-                }
-            }
-        
-            //Shows button sprite
-            void render() {
-
-                int &x = mPosition.x;
-                int &y = mPosition.y;
-                drawRectangle(x+TILE_PADDING, y+TILE_PADDING, BUTTON_WIDTH, BUTTON_HEIGHT,
-                            42, 45, 46, 1);
-                
-                Uint8 r = 121, g = 130, b = 127;
-                switch (mCurrentState) {
-                    case BUTTON_MOUSE_DOWN:
-                        Mix_PlayChannel(-1, gClick, 0);
-                        break;
-                    case BUTTON_MOUSE_OUT:
-                        r = 161, g = 181, b = 175;
-                        break;
-                    default:
-                        break;
-                }
-                drawRectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT,
-                                    r, g, b, 1);
-                gTextTextureSmall.loadFromRenderedText(mName, fontcolour, gFontSmall);
-                gTextTextureSmall.render(x + (BUTTON_WIDTH-gTextTextureSmall.getWidth())/2,
-                                         y + (BUTTON_HEIGHT-gTextTextureSmall.getHeight())/2);
-                
-            }
-
-        private:
-            //Top left position
-            SDL_Point mPosition;
-            std::string mName;
-            //Currently used global sprite
-            LButtonState mCurrentState;
-    };
-
-
-    LButton gButtons[ TOTAL_BUTTONS ];
-
+    
 
     bool init() {
 
@@ -426,9 +296,6 @@ namespace GUI {
         TILE_PADDING = rawSize/20;
         TILE_SIZE = rawSize - 2*TILE_PADDING;
 
-        gButtons[0].setPosition(WINDOW_PADDING + rawSize*gridSize + 50, WINDOW_PADDING + 50);
-        gButtons[0].setName("PAUSE");
-
         std::cerr<<"gridSize: "<<gridSize<<'\n';
         std::cerr<<"rawSize: "<<rawSize<<'\n';
         std::cerr<<"TILE_SIZE: "<<TILE_SIZE<<'\n';
@@ -436,8 +303,6 @@ namespace GUI {
     }
 
     void drawBoard(const std::vector<Tile> board, const bool& drawNumber) {
-
-        SDL_RenderClear(gRenderer);
 
         // Render background
         drawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 
@@ -462,8 +327,12 @@ namespace GUI {
                                     y + (rawSize/2 - gTextTexture.getHeight()/2));
             }
         }
-        gButtons[0].render();
-
+    }
+    void clearRender() {
+        SDL_RenderClear(gRenderer);
+    }
+    void startRender() {
         SDL_RenderPresent(gRenderer);
+
     }
 }
