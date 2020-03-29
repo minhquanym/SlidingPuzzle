@@ -292,8 +292,8 @@ namespace GUI {
             if (tile.id == 0) continue;
             int idRow = (tile.id-1)/gridSize;
             int idCol = (tile.id-1)%gridSize;
-            int x = tile.x + WINDOW_PADDING + 2*TILE_PADDING;
-            int y = tile.y + WINDOW_PADDING + 2*TILE_PADDING;
+            int x = tile.x + WINDOW_PADDING + TILE_PADDING;
+            int y = tile.y + WINDOW_PADDING + TILE_PADDING;
             SDL_Rect tileRect = {x, y, TILE_SIZE, TILE_SIZE};
 
             if (true) {

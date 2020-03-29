@@ -9,14 +9,14 @@ namespace GAME_PLAY {
         std::cout << ".......Loading game data.......\n";
 
         /// initalize tile information
-            board.a.resize(3);
-            for (int i = 0; i < 3; ++i) board.a[i].resize(3);
+        board.a.resize(3);
+        for (int i = 0; i < 3; ++i) board.a[i].resize(3);
 
             int cc = 0;
             for (int j = 0; j < 3; ++j) for (int i = 0; i < 3; ++i) board.a[i][j] = (++cc) % 9; 
             board.Space_location = std::make_pair(2, 2);
 
-            //board.debug_board();
+            board.debug_board();
 
         int m = (int) board.a.size();
         int n = (int) board.a[0].size();
@@ -88,13 +88,12 @@ namespace GAME_PLAY {
 
     void PLAY() {
         SDL_Event event;
-        bool quit = false;
 
+        bool quit = false;
         while (!quit) {
 
             while ( SDL_PollEvent(&event) ) {
-
-                if ( event.type == SDL_QUIT) {
+                if (event.type == SDL_QUIT) {
                     quit = true;
                 }
                 if ( event.type != SDL_KEYDOWN ) continue;
@@ -116,17 +115,20 @@ namespace GAME_PLAY {
                         ///solution
                         break;
                     case SDLK_ESCAPE:
+                        /// out GAME
                         quit = true;
                         break;
                 }
 
-                // if ( board.winGame() ) {
-                //     std::cout << "Accept\n";
-                //     break;
-                // }
+                board.debug_board();
+
+                if ( board.winGame() ) {
+                    std::cout << "Accept\n";
+                    SDL_Delay(500);
+                    break;
+                }
             }
         }
         GUI::destroy();
     }
-} 
-
+}
