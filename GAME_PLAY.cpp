@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include "GUI.cpp"
 #include "Solution.cpp"
+#include "RandomStart.cpp"
 
 namespace GAME_PLAY {
     Board board;
@@ -12,16 +13,17 @@ namespace GAME_PLAY {
         GUI::init();
         GUI::loadMedia();
         GUI::setGridSize(3);
-
         
         /// initalize tile information
         board.destination(3, GUI::rawSize);
 
         /// show destination board state
         GUI::drawBoard(board.TilePos, 1);
+        SDL_Delay(2000);
 
         /// initalize start board state
-        // board = Solution_And_Random_Board::RandomStart();
+        RandomStart::randomStart(board);
+        GUI::drawBoard(board.TilePos, 1);
     }
 
     void moveBoard(Board &board, int addX, int addY) {
@@ -109,11 +111,12 @@ namespace GAME_PLAY {
                 GUI::drawBoard(board.TilePos, 1);
                 // board.debug_board();
 
-                // if ( board.winGame() ) {
-                //     std::cout << "Accept\n";
-                //     SDL_Delay(500);
-                //     break;
-                // }
+                if ( board.winGame() ) {
+                    std::cout << "Accept\n";
+                    SDL_Delay(500);
+                    quit = true;
+                    break;
+                }
             }
         }
         GUI::destroy();

@@ -36,6 +36,11 @@ struct Board {
         }
     }
 
+    void debug_tile() {
+        std::cerr << "TILE: \n";
+        for (Tile foo : TilePos) std::cerr << foo.id << " " << foo.x << " " << foo.y << '\n';
+    }
+
     void destination(int gridSize, int rawSize) {
         a.resize(gridSize);
         for (int i = 0; i < gridSize; ++i) a[i].resize(3);
