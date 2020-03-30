@@ -181,7 +181,7 @@ namespace GUI {
     };
 
     LTexture gTextTexture, gTextTextureSmall;
-    LTexture gImageTexture;
+    LTexture gImageTexture, gWinnerTexture, gLoserTexture;
     std::vector<SDL_Rect> gTileClips;
         
     void drawRectangle(int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
@@ -254,6 +254,15 @@ namespace GUI {
                 gTileClips[id].w = TILE_SIZE;
                 gTileClips[id].h = TILE_SIZE;
             }
+
+        if (!gWinnerTexture.loadFromFile("assets/winner.jpg")) {
+            printf("Failed to load picture");
+            return false;
+        }
+        if (!gLoserTexture.loadFromFile("assets/loser.jpg")) {
+            printf("Failed to load picture");
+            return false;
+        }
         // Load audio
         
         gClick = Mix_LoadWAV("assets/click.wav");
@@ -285,7 +294,9 @@ namespace GUI {
     void destroy() {
 
         Mix_FreeChunk(gClick);
+        Mix_FreeMusic(gMusic);
         gClick = NULL;
+        gMusic = NULL;
         // Destroy window
         SDL_DestroyRenderer(gRenderer);
         SDL_DestroyWindow(gWindow);
@@ -352,7 +363,7 @@ namespace GUI {
         drawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 
                         88, 55, 128, 1);
         gImageTexture.render(WINDOW_PADDING, WINDOW_PADDING);
-        //gWinnerTexture.render()
+        gWinnerTexture.render(400, 400);
         SDL_RenderPresent(gRenderer);
     }
 
