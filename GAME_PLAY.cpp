@@ -8,7 +8,7 @@ namespace GAME_PLAY {
     const int DRAW_NUMBER = 1;
     bool FREEZE = false;
 
-    const int BUTTON_WIDTH = 150;
+    const int BUTTON_WIDTH = 200;
     const int BUTTON_HEIGHT = 50;
     const int TOTAL_BUTTONS = 3;
     
@@ -122,7 +122,6 @@ namespace GAME_PLAY {
                 switch (mCurrentState) {
                     case BUTTON_MOUSE_DOWN:
                         Mix_PlayChannel(-1, GUI::gClick, 0);
-                        SOLVE();
                         break;
                     case BUTTON_MOUSE_OUT:
                         r = 161, g = 181, b = 175;
@@ -155,6 +154,7 @@ namespace GAME_PLAY {
     void DRAW() {
         GUI::clearRender();
         GUI::drawBoard(board.TilePos, DRAW_NUMBER);
+        gButtons[0].setName("SCORE: " + std::to_string(score));
         gButtons[0].render();
         GUI::startRender();
     }
@@ -166,7 +166,7 @@ namespace GAME_PLAY {
         GUI::init();
         GUI::setGridSize(3);
         gButtons[0].setPosition(GUI::WINDOW_PADDING + GUI::rawSize*GUI::gridSize + 50, GUI::WINDOW_PADDING + 50);
-        gButtons[0].setName("SOLVE");
+        
         GUI::loadMedia();
         
         /// initalize tile information
@@ -185,13 +185,13 @@ namespace GAME_PLAY {
     }
 
     void moveBoard(Board &board, int addX, int addY) {
-        score -= 5;
-        if (score <= 0) return;
 
         int Finish_x = board.Space_location.first, Finish_y = board.Space_location.second;
         int Start_x = Finish_x + addX, Start_y = Finish_y + addY;
         if ( !board.inBoard(Start_x, Start_y) ) return;
 
+        score -= 5;
+        if (score <= 0) return;
         int fi = board.a[Finish_x][Finish_y];
         int st = board.a[Start_x][Start_y];
         Tile saveTile = board.TilePos[st];

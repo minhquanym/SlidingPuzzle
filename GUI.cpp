@@ -261,7 +261,7 @@ namespace GUI {
 
         // Load font 
         gFont = TTF_OpenFont("assets/neuropol.ttf", 50);
-        gFontSmall = TTF_OpenFont("assets/neuropol.ttf", 25);
+        gFontSmall = TTF_OpenFont("assets/neuropol.ttf", 20);
 
         if (gFont == NULL) {
             printf( "Failed to load font! SDL_ttf Error: %s\n", TTF_GetError() );
@@ -307,7 +307,6 @@ namespace GUI {
         // Render background
         drawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 
                         88, 55, 128, 1);
-
         for (auto tile : board) {
             if (tile.id == 0) continue;
             int x = tile.x + WINDOW_PADDING + TILE_PADDING;
