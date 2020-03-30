@@ -259,10 +259,10 @@ namespace GUI {
             printf("Failed to load picture");
             return false;
         }
-        if (!gLoserTexture.loadFromFile("assets/loser.jpg")) {
-            printf("Failed to load picture");
-            return false;
-        }
+        // if (!gLoserTexture.loadFromFile("assets/loser.jpg")) {
+        //     printf("Failed to load picture");
+        //     return false;
+        // }
         // Load audio
         
         gClick = Mix_LoadWAV("assets/click.wav");
@@ -363,7 +363,7 @@ namespace GUI {
         drawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 
                         88, 55, 128, 1);
         gImageTexture.render(WINDOW_PADDING, WINDOW_PADDING);
-        gWinnerTexture.render(400, 400);
+        gWinnerTexture.render(500, 100);
         SDL_RenderPresent(gRenderer);
     }
 
@@ -372,6 +372,7 @@ namespace GUI {
         drawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 
                         88, 55, 128, 1);
         gImageTexture.render(WINDOW_PADDING, WINDOW_PADDING);
+        gWinnerTexture.render(500, 100);
         SDL_RenderPresent(gRenderer);
     }
 }
