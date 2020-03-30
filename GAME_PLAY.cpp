@@ -21,9 +21,11 @@ namespace GAME_PLAY {
         BUTTON_TOTAL = 4
     };
     Board board;
+    int score = 0;
+
     void moveBoard(Board &board, int addX, int addY);
     void SOLVE() {
-        FREEZE = true;
+        FREEZE = true; score = 0;
         Solution::Solution_A_star(board);
         std::cerr << "AFTER:\n";
         board.debug_board();
@@ -149,7 +151,6 @@ namespace GAME_PLAY {
     LButton gButtons[ TOTAL_BUTTONS ];
 
     
-    int score = 0;
 
     void DRAW() {
         GUI::clearRender();
@@ -190,8 +191,10 @@ namespace GAME_PLAY {
         int Start_x = Finish_x + addX, Start_y = Finish_y + addY;
         if ( !board.inBoard(Start_x, Start_y) ) return;
 
-        score -= 5;
-        if (score <= 0) return;
+        if (!FREEZE) {
+            score -= 5;
+            if (score <= 0) return;
+        }
         int fi = board.a[Finish_x][Finish_y];
         int st = board.a[Start_x][Start_y];
         Tile saveTile = board.TilePos[st];
@@ -232,6 +235,7 @@ namespace GAME_PLAY {
                 if (event.type == SDL_QUIT) {
                     quit = true;
                 }
+                if (FREEZE) break;
                 if ( event.type != SDL_KEYDOWN ) {
                     switch (event.key.keysym.sym) {
                         case SDLK_UP:
@@ -256,27 +260,26 @@ namespace GAME_PLAY {
                             break;
                     }
                 }
-
-                if (score <= 0) {
-                    std::cout << "LOSER!!!!!\n";
-                    quit = true;
-                }
-
                 if (!FREEZE) {
                     for (int i = 0; i < 1; i++)
                         gButtons[i].handleEvent(&event);
                 }
 
-
-                if ( board.winGame() ) {
-                    std::cout << "Accept\n";
-                    SDL_Delay(500);
-                    quit = true;
-                    break;
+                if (score <= 0) {
+                    std::cout << "LOSER!!!!!\n";
+                    SDL_Delay(1000);
+                    GUI::renderLoser();
+                    FREEZE = true;
                 }
+                else if ( board.winGame() ) {
+                    FREEZE = true;
+                    SDL_Delay(1000);
+                    GUI::renderWinner();
+                }
+                else DRAW();
             }
-            DRAW();
-        }
+
+            }
         GUI::destroy();
     }
 }

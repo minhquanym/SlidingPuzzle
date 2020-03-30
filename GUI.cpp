@@ -27,9 +27,11 @@ namespace GUI {
 
     //Global font
     TTF_Font *gFont = NULL;
+    TTF_Font *gFontMedium = NULL;
     TTF_Font *gFontSmall = NULL;
 
     Mix_Chunk *gClick = NULL;
+    Mix_Music *gMusic = NULL;
 
 
     //Texture wrapper class
@@ -253,14 +255,21 @@ namespace GUI {
                 gTileClips[id].h = TILE_SIZE;
             }
         // Load audio
+        
         gClick = Mix_LoadWAV("assets/click.wav");
         if (gClick == NULL) {
             printf("Failed to load sound effect! SDL_mixer Error: %s\n", Mix_GetError());
             return false;
         }
-
+        gMusic = Mix_LoadMUS("assets/music.wav");
+        if (gMusic == NULL) {
+            printf("Failed to load background music! SDL_Mixer Error: %s\n", Mix_GetError());
+            return false;
+        }
+        Mix_PlayMusic(gMusic, -1);
         // Load font 
         gFont = TTF_OpenFont("assets/neuropol.ttf", 50);
+        gFontMedium = TTF_OpenFont("assets/neuropol.ttf", 25);
         gFontSmall = TTF_OpenFont("assets/neuropol.ttf", 20);
 
         if (gFont == NULL) {
@@ -326,6 +335,9 @@ namespace GUI {
                                     y + (rawSize/2 - gTextTexture.getHeight()/2));
             }
         }
+        gTextTextureSmall.loadFromRenderedText("Press S to solve", fontcolour, gFontMedium);
+        gTextTextureSmall.render(150, 20);
+
     }
     void clearRender() {
         SDL_RenderClear(gRenderer);
@@ -333,5 +345,22 @@ namespace GUI {
     void startRender() {
         SDL_RenderPresent(gRenderer);
 
+    }
+
+    void renderWinner() {
+        SDL_RenderClear(gRenderer);
+        drawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 
+                        88, 55, 128, 1);
+        gImageTexture.render(WINDOW_PADDING, WINDOW_PADDING);
+        //gWinnerTexture.render()
+        SDL_RenderPresent(gRenderer);
+    }
+
+    void renderLoser() {
+        SDL_RenderClear(gRenderer);
+        drawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 
+                        88, 55, 128, 1);
+        gImageTexture.render(WINDOW_PADDING, WINDOW_PADDING);
+        SDL_RenderPresent(gRenderer);
     }
 }
